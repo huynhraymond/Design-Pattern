@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+</body>
+
+<script>
+    // Dependencies injection - setup for DI
+    function DI() {
+        this.dependencies = {};
+        /*
+        var dependencies = {};
+
+        Object.defineProperty(this, 'dependencies', {
+            get: function() { return dependencies; }
+        });
+
+        // private register
+        this.register = function(name, object) { dependencies[name] = object; }  */
+    }
+
+    // Moving register() outside for the time being
+    DI.prototype.register = function(name, object) {
+        this.dependencies[name] = object;
+    };
+
+    DI.prototype.resolve = function() {
+        var args = Array.prototype.slice.call(arguments);
+        //console.log(args);      // -> [test(car, v), 8]
+
+        // this is the function to be invoked
+        var fn = args.shift();
+        //console.log(fn, args);  // -> test(car, v) and args -> [8]
+
+        // figure out the parameters
+        var params = getNameOfParameters(fn);
+        var self = this;
+
+        //console.log(params);
+        //console.log(self.dependencies);
+
+        // find which ones are dependencies
+        // loop over each parameter and if found as a prop in dependencies,
+        // add it to a new array (fn_args)
+        // else pick the next value in the arguments object and add it to fn_args
+        var fn_args = params.map(function (param) {
+            return param in self.dependencies ? self.dependencies[param] : args.shift();
+        });
+
+        console.log(fn_args);
+        fn.apply(null, fn_args);
+    };
+
+    // e.g., test(car, v)
+    function getNameOfParameters(fn) {
+        /*
+        var params = /\(([^)]+)/gmi.exec(fn)[1];
+
+        params = params.split(',');
+
+        console.log(params);  */
+
+        // returns the named parameters of a function
+        // input: function, output: an array of parameter names
+        return fn.toString().match(/^\s?function\s[^(]+\(([^)]+)/i)[1]
+                .split(',').map(function (param) { return param.trim(); });
+        // you can replace the split
+        // and the trim with a regular expression in the base.
+    }
+
+    function test(car, v) {
+        console.log(car);
+        console.log(v);
+    }
+
+    // Invocation
+    var di = new DI();
+    di.register('car', {make: 'Toyota'} );
+    di.resolve(test, 8);
+
+</script>
+</html>

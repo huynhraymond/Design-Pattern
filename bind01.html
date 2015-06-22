@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+</body>
+
+<script>
+    var counter = 0;
+    function randomPrint(i, callback) {
+        var randomInterval = ~~(Math.random() * 1000 );
+
+        setTimeout(function() {
+            console.log(i, randomInterval);
+            //return {i: randomInterval};
+            callback(null, randomInterval); // callback will take in 2 parameters -> error value, result/success value
+        }, randomInterval);
+    }
+
+    function printSum(err, result) {
+        printSum.arr = printSum.arr || [];
+        printSum.arr.push(result);
+        counter++;
+        if (counter >= 10) {
+            console.log(printSum.arr.reduce(sum));
+        }
+    }
+
+    function sum(a, b) { return a + b; }
+
+    for ( var i = 0; i < 10; i++ ) {
+        randomPrint(i, printSum);
+    }
+
+    // todo write code to print out the sum of all the randomIntervals that were used with randomPrint
+</script>
+
+</html>

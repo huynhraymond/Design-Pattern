@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+</body>
+
+<script>
+
+    function memoize(fn) {
+        // put a cache property on the function
+        var cache = {};
+
+
+        // invoking fn with the supplied arguments
+        return function() {
+            var args = Array.prototype.slice.call(arguments);
+
+            var hash = args.reduce(function(hash, curr) {
+                // whether is primitive type - primitive type is NOT object
+                hash += ( curr === Object(curr) ) ? JSON.stringify(curr) : curr;
+                //console.log(hash);
+                return hash;
+            }, '');
+
+            if ( typeof cache[hash] === 'undefined' ) {
+                console.log('did not find ' + hash + ' in cache');
+                cache[hash] = fn.apply(null, args);
+            }
+
+            console.log(cache);
+            return cache[hash];
+        }
+    }
+
+    function factorial(num) {
+        if ( num < 1 )  return 1;
+
+        return num * factorial(num - 1);
+    }
+
+
+    var factorial_m = memoize(factorial);
+    // memoized version
+    //console.log(factorial_m(5));
+    //console.log(factorial_m(10));
+
+    // using recursive function
+    var memoized_factorial = memoize( function(n) {
+       return ( n <= 1 ) ? 1 : n *  memoized_factorial(n - 1 );
+    });
+
+    memoized_factorial(5);
+    memoized_factorial(10);
+
+    //console.log(factorial([1, 2, 3, 4]));
+
+    /*
+     for ( var i = 1; i <= args[0]; i++ ) {
+     var hash = [i].reduce( function(hash, curr) {
+     hash += ( curr === Object(curr) ) ? JSON.stringify(curr) : curr;
+
+     return hash;
+     }, '');
+
+     if ( typeof  cache[hash] === 'undefined' ) {
+
+     console.log('Did not find [' + i + '] in cache');
+     cache[hash] = fn.apply(null, [i]);
+     }
+     }
+
+     console.log(cache);
+     return cache[args[0]];  */
+
+</script>
+
+</html>

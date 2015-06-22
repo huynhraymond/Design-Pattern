@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+</body>
+
+<script>
+    function Publisher() {
+        this.events = {};
+    }
+
+    Publisher.prototype.publish = function(eventName) {
+        var fns = this.events[eventName];
+
+        fns.forEach( function(fn) { fn(); } );
+    };
+
+    function Subscriber() {}
+
+    Subscriber.prototype.subscribe = function(publisher, eventName, callback) {
+        publisher.events[eventName] = publisher.events[eventName] || [];
+        publisher.events[eventName].push(callback);
+    };
+
+    var user = new Publisher();
+
+    var engine = new Subscriber();
+    engine.subscribe(user, 'stop', function() { console.log('slow engine down...'); });
+
+    var brakes = new Subscriber();
+    brakes.subscribe(user, 'stop', function() { console.log('slow the car down...'); });
+
+    user.publish('stop');
+
+
+</script>
+</html>
